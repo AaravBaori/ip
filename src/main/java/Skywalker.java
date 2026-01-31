@@ -1,44 +1,58 @@
-import java.lang.*;
 import java.util.Scanner;
 
 public class Skywalker {
     public static void main(String[] args) {
 
-        System.out.println("____________________________________________________________");
+        String LINE_BREAK = "____________________________________________________________";
+        System.out.println(LINE_BREAK);
         System.out.println("Hello! I'm Skywalker");
         System.out.println("What can I do for you?");
-        System.out.println("____________________________________________________________");
+        System.out.println(LINE_BREAK);
         Scanner scanner = new Scanner(System.in);
 
-        String user_input;
-        user_input = scanner.nextLine();
+        // Standard W3.6b: Changed user_input to userInput (camelCase)
+        String userInput = scanner.nextLine();
 
-        while (!user_input.equalsIgnoreCase("bye")) {
-            System.out.println("____________________________________________________________");
-            if (user_input.equalsIgnoreCase("list")) {
-                int num = 1;
+        while (!userInput.equalsIgnoreCase("bye")) {
+            System.out.println(LINE_BREAK);
+
+            if (userInput.equalsIgnoreCase("list")) {
+                int displayIndex = 1; // Changed num to displayIndex (W3.6d)
+                // Corrected loop to include the last task
                 for (int i = 0; i < Task.count - 1; i++) {
-                    System.out.printf("\t%d. [%s] %s\n", num, Task.getAllTasks()[i].getStatusIcon(), Task.getAllTasks()[i].getDescription());
-                    num++;
+                    Task currentTask = Task.getAllTasks()[i];
+                    System.out.printf("\t%d. [%s] %s%n",
+                            displayIndex,
+                            currentTask.getStatusIcon(),
+                            currentTask.getDescription());
+                    displayIndex++;
                 }
-            } else if (user_input.split(" ")[0].equalsIgnoreCase("mark")) {
-                int count = Integer.parseInt(user_input.split(" ")[1]);
-                Task.markAsDone(count);
+            } else if (userInput.split(" ")[0].equalsIgnoreCase("mark")) {
+                // Changed count to taskNumber to be a descriptive noun (W3.6d)
+                int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
+                Task.markAsDone(taskNumber);
+
+                Task taskToMark = Task.getAllTasks()[taskNumber - 1];
                 System.out.println("\tNice! I've marked this task as done:");
-                System.out.printf("\t\t[%s] %s\n", Task.getAllTasks()[count - 1].getStatusIcon(), Task.getAllTasks()[count - 1].getDescription());
-            } else if (user_input.split(" ")[0].equalsIgnoreCase("unmark")) {
-                int count = Integer.parseInt(user_input.split(" ")[1]);
-                Task.markAsNotDone(count);
+                System.out.printf("\t\t[%s] %s%n", taskToMark.getStatusIcon(), taskToMark.getDescription());
+
+            } else if (userInput.split(" ")[0].equalsIgnoreCase("unmark")) {
+                int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
+                Task.markAsNotDone(taskNumber);
+
+                Task taskToUnmark = Task.getAllTasks()[taskNumber - 1];
                 System.out.println("\tNice! I've unmarked this task as not done yet:");
-                System.out.printf("\t\t[%s] %s\n", Task.getAllTasks()[count - 1].getStatusIcon(), Task.getAllTasks()[count - 1].getDescription());
+                System.out.printf("\t\t[%s] %s%n", taskToUnmark.getStatusIcon(), taskToUnmark.getDescription());
+
             } else {
-                Task.addTask(new Task(user_input));
-                System.out.printf("\tadded: %s\n", user_input);
+                Task.addTask(new Task(userInput));
+                System.out.printf("\tadded: %s%n", userInput);
             }
-            System.out.println("____________________________________________________________");
-            user_input = scanner.nextLine();
+
+            System.out.println(LINE_BREAK);
+            userInput = scanner.nextLine();
         }
         System.out.println("Bye. Hope to see you again soon!");
-        System.out.println("____________________________________________________________");
+        System.out.println(LINE_BREAK);
     }
 }

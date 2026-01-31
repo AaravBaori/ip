@@ -3,7 +3,7 @@ public class Task {
     protected boolean isDone;
 
     protected static Task[] allTasks = new Task[100];
-    protected static int count = 1;
+    protected static int count = 0;
 
     public Task(String description) {
         this.description = description;
@@ -11,28 +11,27 @@ public class Task {
     }
 
     public String getStatusIcon() {
-        return (isDone ? "X" : " "); // mark done task with X
+        return (isDone ? "X" : " ");
     }
 
-    public static void markAsDone(int index){
-        Task.allTasks[index-1].isDone = true;
+    public static void markAsDone(int taskNumber) {
+        allTasks[taskNumber - 1].isDone = true;
     }
 
-    public static void markAsNotDone(int index){
-        Task.allTasks[index-1].isDone = false;
+    public static void markAsNotDone(int taskNumber) {
+        allTasks[taskNumber - 1].isDone = false;
     }
 
-    public static void addTask(Task task){
-        Task.allTasks[Task.count - 1] = task;
-        Task.count += 1;
+    public static void addTask(Task task) {
+        allTasks[count] = task;
+        count++;
     }
 
-    public static Task[] getAllTasks(){
-        return Task.allTasks;
+    public static Task[] getAllTasks() {
+        return allTasks;
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return this.description;
     }
 }
-
