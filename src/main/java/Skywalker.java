@@ -1,81 +1,179 @@
 import java.util.Scanner;
 
 public class Skywalker {
-    public static void main(String[] args) {
+    static final String LINE_BREAK = "____________________________________________________________";
+    static final String TODO = "todo";
+    static final String MARK = "mark";
+    static final String UNMARK = "unmark";
+    static final String ADD = "add";
+    static final String DEADLINE = "deadline";
+    static final String EVENT = "event";
+    static final String LIST = "list";
+    private final TextUi textUi = new TextUi();
+    private final TaskManager taskManager = new TaskManager();
 
-        String LINE_BREAK = "____________________________________________________________";
-        System.out.println(LINE_BREAK);
-        System.out.println("Hello! I'm Skywalker");
-        System.out.println("What can I do for you?");
-        System.out.println(LINE_BREAK);
+    public static void main(String[] args){
+        Skywalker bot = new Skywalker();
+        bot.run();
+    }
+    public void run() {
+        textUi.welcomeUser();
+
         Scanner scanner = new Scanner(System.in);
 
         // Standard W3.6b: Changed user_input to userInput (camelCase)
         String userInput = scanner.nextLine();
 
         while (!userInput.equalsIgnoreCase("bye")) {
-            System.out.println(LINE_BREAK);
+            textUi.showLine();
 
-            if (userInput.equalsIgnoreCase("list")) {
-                int displayIndex = 1; // Changed num to displayIndex (W3.6d)
-                // Corrected loop to include the last task
-                System.out.println("\tHere are the tasks in your list:");
-                for (int i = 0; i < Task.getCount(); i++) {
-                    Task currentTask = Task.getAllTasks()[i];
-                    System.out.printf("\t%d.%s\n",i, currentTask);
-                    displayIndex++;
-                }
-            } else if (userInput.split(" ")[0].equalsIgnoreCase("mark")) {
-                // Changed count to taskNumber to be a descriptive noun (W3.6d)
-                int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
-                Task.markAsDone(taskNumber);
+            String instructionType = handleUserInput(userInput).toLowerCase();
 
-                Task taskToMark = Task.getAllTasks()[taskNumber - 1];
-                System.out.println("\tNice! I've marked this task as done:");
-                System.out.printf("\t\t[%s] %s%n", taskToMark.getStatusIcon(), taskToMark);
+            switch (instructionType) {
+                case LIST:
+                    handleList();
+                    break;
 
-            } else if (userInput.split(" ")[0].equalsIgnoreCase("unmark")) {
-                int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
-                Task.markAsNotDone(taskNumber);
+                case MARK:
+                    // Descriptive noun used as per W3.6d
+                    int markNumber = Integer.parseInt(userInput.split(" ")[1]);
+                    handleMark(markNumber);
+                    break;
 
-                Task taskToUnmark = Task.getAllTasks()[taskNumber - 1];
-                System.out.println("\tNice! I've unmarked this task as not done yet:");
-                System.out.printf("\t\t[%s] %s%n", taskToUnmark.getStatusIcon(), taskToUnmark);
+                case UNMARK:
+                    int unmarkNumber = Integer.parseInt(userInput.split(" ")[1]);
+                    handleUnmark(unmarkNumber);
+                    break;
 
-            } else if (userInput.split(" ")[0].equalsIgnoreCase("todo")){
-                String description = userInput.split(" ", 2)[1];
-                Todo todo = new Todo(description);
-                Task.addTask(todo);
-                System.out.println("\tGot it. I've added this task:");
-                System.out.println("\t\t" + todo);
-                System.out.println("\tNow you have " + Task.getCount() + " tasks in the list");
+                case TODO:
+                    handleTodo(userInput);
+                    break;
 
-            } else if(userInput.split(" ")[0].equalsIgnoreCase("add")){
-                Task.addTask(new Task(userInput));
-                System.out.printf("\tadded: %s%n", userInput);
-            } else if(userInput.split(" ")[0].equalsIgnoreCase("deadline")){
-                String description = userInput.split(" /")[0].split(" ", 2)[1];
-                String by = userInput.split("/by")[1].strip();
-                Deadline deadline = new Deadline(description, by);
-                Task.addTask(deadline);
-                System.out.println("\tGot it. I've added this task:");
-                System.out.println("\t\t" + deadline);
-                System.out.println("\tNow you have " + Task.getCount() + " tasks in the list");
-            } else if(userInput.split(" ")[0].equalsIgnoreCase("event")){
-                String description = userInput.split(" /")[0].split(" ", 2)[1];
-                String from = userInput.split("/from")[1].strip().split("/to")[0].strip();
-                String to = userInput.split("/from")[1].strip().split("/to")[1].strip();
-                Event event = new Event(from, to, description);
-                Task.addTask(event);
-                System.out.println("\tGot it. I've added this task:");
-                System.out.println("\t\t" + event);
-                System.out.println("\tNow you have " + Task.getCount() + " tasks in the list");
+                case DEADLINE:
+                    handleDeadline(userInput);
+                    break;
+
+                case EVENT:
+                    handleEvent(userInput);
+                    break;
+
+                case ADD:
+                    String addDesc = userInput.split(" ", 2)[1];
+                    handleAdd(addDesc);
+                    break;
+
+                default:
+                    System.out.println("\tI'm sorry, I don't recognize that command.");
+                    break;
             }
 
-            System.out.println(LINE_BREAK);
+            textUi.showLine();
             userInput = scanner.nextLine();
         }
-        System.out.println("Bye. Hope to see you again soon!");
-        System.out.println(LINE_BREAK);
+        textUi.showGoodbye();
+    }
+
+    public String handleUserInput(String userInput){
+        //returns instruction type
+        return userInput.split(" ")[0];
+    }
+
+    public void handleList(){
+        System.out.println("\tHere are all the tasks in your list:");
+        for(int i = 0; i < taskManager.getCount(); i++){
+            Task currentTask = taskManager.getTask(i);
+            System.out.printf("\t%d.%s\n", i+1,currentTask);
+        }
+    }
+
+    public void handleMark(int taskNumber){
+        Task taskToMark = taskManager.getTask(taskNumber - 1);
+        taskToMark.setDone(true);
+        textUi.showMark(taskToMark);
+    }
+
+    public void handleUnmark(int taskNumber){
+        Task taskToUnmark = taskManager.getTask(taskNumber - 1);
+        taskToUnmark.setDone(false);
+        textUi.showUnmark(taskToUnmark);
+    }
+
+    public void handleTodo(String userInputs){
+        String[] parts = userInputs.split(" ", 2);
+
+        if(parts.length < 2 || parts[1].trim().isEmpty()){
+            textUi.showError("The description of todo cannot be empty.");
+            return;
+        }
+
+        String taskDescription = parts[1].trim();
+        Todo todo = new Todo(taskDescription);
+        taskManager.add(todo);
+        textUi.showTaskAdded(taskManager);
+    }
+
+    public void handleDeadline(String userInput){
+        String[] parts = userInput.split(" ", 2);
+
+        if(parts.length < 2 || parts[1].trim().isEmpty()){
+            textUi.showError("The description of a deadline cannot be empty!");
+            return;
+        }
+
+        String[] deadlineParts = parts[1].split(" /by", 2);
+
+        if(deadlineParts.length > 2 || deadlineParts[1].trim().isEmpty()){
+            textUi.showError("A deadline must have a date (use /by [date]).");
+            return;
+        }
+
+        String taskDescription = deadlineParts[0].trim();
+        String by = deadlineParts[1].trim();
+
+        Deadline deadline = new Deadline(taskDescription, by);
+        taskManager.add(deadline);
+        textUi.showTaskAdded(taskManager);
+    }
+
+    public void handleEvent(String userInput){
+        String[] parts = userInput.split(" ", 2);
+
+        if(parts.length < 2 || parts[1].trim().isEmpty()){
+            textUi.showError("The description of an event cannot be empty!");
+            return;
+        }
+
+        String[] eventParts = parts[1].split(" /from ", 2);
+        if(eventParts.length < 2 || eventParts[1].trim().isEmpty()){
+            textUi.showError("An event must have a start time (use /from [time]).");
+            return;
+        }
+
+        String[] timeParts = eventParts[1].split(" /to ", 2);
+        if(timeParts.length < 2 || timeParts[1].trim().isEmpty()){
+            textUi.showError("An event must have an end time (use /to [time]).");
+            return;
+        }
+
+        String taskDescription = eventParts[0].trim();
+        String from = timeParts[0].trim();
+        String to = timeParts[1].trim();
+        Event event = new Event(from, to, taskDescription);
+        taskManager.add(event);
+        textUi.showTaskAdded(taskManager);
+    }
+
+    public void handleAdd(String userInput){
+        String[] parts = userInput.split(" ");
+
+        if(parts.length < 2 || parts[1].trim().isEmpty()){
+            textUi.showError("There is no description provided with the add command");
+            return;
+        }
+
+        String taskDescription = parts[1].trim();
+        Task task = new Task(taskDescription);
+        taskManager.add(task);
+        System.out.printf("\tadded: %s%n", task);
     }
 }
