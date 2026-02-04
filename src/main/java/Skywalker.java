@@ -122,7 +122,7 @@ public class Skywalker {
 
         String[] deadlineParts = parts[1].split(" /by", 2);
 
-        if(deadlineParts.length > 2 || deadlineParts[1].trim().isEmpty()){
+        if(deadlineParts.length < 2 || deadlineParts[1].trim().isEmpty()){
             textUi.showError("A deadline must have a date (use /by [date]).");
             return;
         }

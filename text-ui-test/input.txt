@@ -1,0 +1,7 @@
+todo read book
+deadline submit project /by Sunday
+event party /from Friday 6pm /to 9pm
+list
+todo
+deadline oops
+bye
