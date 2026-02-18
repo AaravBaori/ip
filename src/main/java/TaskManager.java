@@ -27,4 +27,8 @@ public class TaskManager {
     public int getCount(){
         return this.count;
     }
+
+    public boolean isEmpty(){
+        return this.getCount() == 0;
+    }
 }

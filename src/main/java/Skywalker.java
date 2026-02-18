@@ -1,179 +1,163 @@
 import java.util.Scanner;
+import skywalker.responses.SkywalkerResponses;
 
 public class Skywalker {
-    static final String LINE_BREAK = "____________________________________________________________";
+    static final String UNMARK = "unmark";
     static final String TODO = "todo";
     static final String MARK = "mark";
-    static final String UNMARK = "unmark";
-    static final String ADD = "add";
     static final String DEADLINE = "deadline";
     static final String EVENT = "event";
     static final String LIST = "list";
-    private final TextUi textUi = new TextUi();
+    static final String BYE = "bye";
+
     private final TaskManager taskManager = new TaskManager();
 
-    public static void main(String[] args){
-        Skywalker bot = new Skywalker();
-        bot.run();
+    public static void main(String[] args) {
+        new Skywalker().run();
     }
-    public void run() {
-        textUi.welcomeUser();
 
+    public void run() {
+        SkywalkerResponses.printWithLines(SkywalkerResponses.WELCOME_MESSAGE);
         Scanner scanner = new Scanner(System.in);
 
-        // Standard W3.6b: Changed user_input to userInput (camelCase)
-        String userInput = scanner.nextLine();
+        while (scanner.hasNextLine()) {
+            String userInput = scanner.nextLine();
+            if (userInput.equalsIgnoreCase(BYE)) break;
 
-        while (!userInput.equalsIgnoreCase("bye")) {
-            textUi.showLine();
+            try {
+                String command = handleUserInput(userInput).toLowerCase();
 
-            String instructionType = handleUserInput(userInput).toLowerCase();
-
-            switch (instructionType) {
-                case LIST:
-                    handleList();
-                    break;
-
-                case MARK:
-                    // Descriptive noun used as per W3.6d
-                    int markNumber = Integer.parseInt(userInput.split(" ")[1]);
-                    handleMark(markNumber);
-                    break;
-
-                case UNMARK:
-                    int unmarkNumber = Integer.parseInt(userInput.split(" ")[1]);
-                    handleUnmark(unmarkNumber);
-                    break;
-
-                case TODO:
-                    handleTodo(userInput);
-                    break;
-
-                case DEADLINE:
-                    handleDeadline(userInput);
-                    break;
-
-                case EVENT:
-                    handleEvent(userInput);
-                    break;
-
-                case ADD:
-                    String addDesc = userInput.split(" ", 2)[1];
-                    handleAdd(addDesc);
-                    break;
-
-                default:
-                    System.out.println("\tI'm sorry, I don't recognize that command.");
-                    break;
+                switch (command) {
+                    case LIST:     handleList(); break;
+                    case MARK:     handleMark(userInput); break;
+                    case UNMARK:   handleUnmark(userInput); break;
+                    case TODO:     handleTodo(userInput); break;
+                    case DEADLINE: handleDeadline(userInput); break;
+                    case EVENT:    handleEvent(userInput); break;
+                    default:
+                        SkywalkerResponses.printWithLines(SkywalkerResponses.UNKNOWN_COMMAND);
+                        break;
+                }
+            } catch (SkywalkerException e) {
+                SkywalkerResponses.printWithLines("\t A disturbance in the Force: " + e.getMessage());
+            } catch (Exception e) {
+                SkywalkerResponses.printWithLines("\t Unexpected error in the galaxy: " + e.getMessage());
             }
-
-            textUi.showLine();
-            userInput = scanner.nextLine();
         }
-        textUi.showGoodbye();
+        SkywalkerResponses.printWithLines(SkywalkerResponses.BYE_MESSAGE);
     }
 
-    public String handleUserInput(String userInput){
-        //returns instruction type
+    public String handleUserInput(String userInput) {
         return userInput.split(" ")[0];
     }
 
-    public void handleList(){
-        System.out.println("\tHere are all the tasks in your list:");
-        for(int i = 0; i < taskManager.getCount(); i++){
-            Task currentTask = taskManager.getTask(i);
-            System.out.printf("\t%d.%s\n", i+1,currentTask);
-        }
-    }
-
-    public void handleMark(int taskNumber){
-        Task taskToMark = taskManager.getTask(taskNumber - 1);
-        taskToMark.setDone(true);
-        textUi.showMark(taskToMark);
-    }
-
-    public void handleUnmark(int taskNumber){
-        Task taskToUnmark = taskManager.getTask(taskNumber - 1);
-        taskToUnmark.setDone(false);
-        textUi.showUnmark(taskToUnmark);
-    }
-
-    public void handleTodo(String userInputs){
-        String[] parts = userInputs.split(" ", 2);
-
-        if(parts.length < 2 || parts[1].trim().isEmpty()){
-            textUi.showError("The description of todo cannot be empty.");
+    public void handleList() {
+        if (taskManager.isEmpty()) {
+            SkywalkerResponses.printWithLines(SkywalkerResponses.MESSAGE_EMPTY_LIST);
             return;
         }
+        StringBuilder sb = new StringBuilder(SkywalkerResponses.MESSAGE_LIST_HEADER);
+        for (int i = 0; i < taskManager.getCount(); i++) {
+            sb.append(String.format("\t  %d.%s\n", i + 1, taskManager.getTask(i)));
+        }
+        SkywalkerResponses.printWithLines(sb.toString().trim());
+    }
 
-        String taskDescription = parts[1].trim();
-        Todo todo = new Todo(taskDescription);
+    public void handleMark(String userInput) throws SkywalkerException {
+        try {
+            int num = getMarkNumber(userInput);
+            Task t = taskManager.getTask(num - 1);
+            if (t.isDone()) throw new SkywalkerException(SkywalkerResponses.ERROR_ALREADY_DONE);
+
+            t.setDone(true);
+            SkywalkerResponses.printWithLines(SkywalkerResponses.MESSAGE_MARK_SUCCESS + "\t    " + t);
+        } catch (NumberFormatException e) {
+            throw new SkywalkerException(SkywalkerResponses.ERROR_NOT_INT);
+        }
+    }
+
+    public void handleUnmark(String userInput) throws SkywalkerException {
+        try {
+            int num = getMarkNumber(userInput);
+            Task t = taskManager.getTask(num - 1);
+            if (!t.isDone()) throw new SkywalkerException(SkywalkerResponses.ERROR_NOT_DONE_YET);
+
+            t.setDone(false); // Fixed: set to false
+            SkywalkerResponses.printWithLines(SkywalkerResponses.MESSAGE_UNMARK_SUCCESS + "\t    " + t); // Fixed: unmark message
+        } catch (NumberFormatException e) {
+            throw new SkywalkerException(SkywalkerResponses.ERROR_NOT_INT);
+        }
+    }
+
+    public void handleTodo(String userInput) throws SkywalkerException {
+        String[] parts = userInput.split(" ", 2);
+        if (parts.length < 2 || parts[1].trim().isEmpty()) {
+            throw new SkywalkerException(SkywalkerResponses.ERROR_EMPTY_TODO);
+        }
+        Task todo = new Todo(parts[1].trim());
         taskManager.add(todo);
-        textUi.showTaskAdded(taskManager);
+        notifyAdd(todo);
     }
 
-    public void handleDeadline(String userInput){
+    public void handleDeadline(String userInput) throws SkywalkerException {
         String[] parts = userInput.split(" ", 2);
-
-        if(parts.length < 2 || parts[1].trim().isEmpty()){
-            textUi.showError("The description of a deadline cannot be empty!");
-            return;
+        if (parts.length < 2 || parts[1].trim().isEmpty()) {
+            throw new SkywalkerException(SkywalkerResponses.ERROR_EMPTY_DEADLINE);
         }
-
-        String[] deadlineParts = parts[1].split(" /by", 2);
-
-        if(deadlineParts.length < 2 || deadlineParts[1].trim().isEmpty()){
-            textUi.showError("A deadline must have a date (use /by [date]).");
-            return;
+        String[] details = parts[1].split(" /by ", 2);
+        if (details.length < 2 || details[1].trim().isEmpty()) {
+            throw new SkywalkerException(SkywalkerResponses.ERROR_MISSING_BY);
         }
-
-        String taskDescription = deadlineParts[0].trim();
-        String by = deadlineParts[1].trim();
-
-        Deadline deadline = new Deadline(taskDescription, by);
-        taskManager.add(deadline);
-        textUi.showTaskAdded(taskManager);
+        Task d = new Deadline(details[0].trim(), details[1].trim());
+        taskManager.add(d);
+        notifyAdd(d);
     }
 
-    public void handleEvent(String userInput){
+    public void handleEvent(String userInput) throws SkywalkerException {
         String[] parts = userInput.split(" ", 2);
+        if (parts.length < 2 || parts[1].trim().isEmpty()) throw new SkywalkerException(SkywalkerResponses.ERROR_EMPTY_EVENT);
 
-        if(parts.length < 2 || parts[1].trim().isEmpty()){
-            textUi.showError("The description of an event cannot be empty!");
-            return;
+        String args = parts[1];
+        if (!args.contains("/from") || !args.contains("/to")) throw new SkywalkerException(SkywalkerResponses.ERROR_MISSING_EVENT_DELIMITERS);
+
+        int fIdx = args.indexOf("/from");
+        int tIdx = args.indexOf("/to");
+        String desc, from, to;
+
+        try {
+            if (fIdx < tIdx) {
+                desc = args.substring(0, fIdx).trim();
+                from = args.substring(fIdx + 5, tIdx).trim();
+                to = args.substring(tIdx + 3).trim();
+            } else {
+                desc = args.substring(0, tIdx).trim();
+                to = args.substring(tIdx + 3, fIdx).trim();
+                from = args.substring(fIdx + 5).trim();
+            }
+            if (desc.isEmpty() || from.isEmpty() || to.isEmpty()) throw new SkywalkerException(SkywalkerResponses.ERROR_EVENT_PART_EMPTY);
+
+            Task e = new Event(from, to, desc);
+            taskManager.add(e);
+            notifyAdd(e);
+        } catch (Exception e) {
+            throw new SkywalkerException(SkywalkerResponses.ERROR_EVENT_PART_EMPTY);
         }
-
-        String[] eventParts = parts[1].split(" /from ", 2);
-        if(eventParts.length < 2 || eventParts[1].trim().isEmpty()){
-            textUi.showError("An event must have a start time (use /from [time]).");
-            return;
-        }
-
-        String[] timeParts = eventParts[1].split(" /to ", 2);
-        if(timeParts.length < 2 || timeParts[1].trim().isEmpty()){
-            textUi.showError("An event must have an end time (use /to [time]).");
-            return;
-        }
-
-        String taskDescription = eventParts[0].trim();
-        String from = timeParts[0].trim();
-        String to = timeParts[1].trim();
-        Event event = new Event(from, to, taskDescription);
-        taskManager.add(event);
-        textUi.showTaskAdded(taskManager);
     }
 
-    public void handleAdd(String userInput){
+    private void notifyAdd(Task task) {
+        String message = SkywalkerResponses.MESSAGE_ADD_SUCCESS + "\t    " + task + "\n" +
+                SkywalkerResponses.getTaskCountMessage(taskManager.getCount());
+        SkywalkerResponses.printWithLines(message);
+    }
+
+    private int getMarkNumber(String userInput) throws SkywalkerException {
         String[] parts = userInput.split(" ");
+        if (parts.length < 2) throw new SkywalkerException(SkywalkerResponses.ERROR_INVALID_FORMAT);
 
-        if(parts.length < 2 || parts[1].trim().isEmpty()){
-            textUi.showError("There is no description provided with the add command");
-            return;
+        int num = Integer.parseInt(parts[1]);
+        if (num <= 0 || num > taskManager.getCount()) {
+            throw new SkywalkerException("\t That mission does not exist in the Jedi archives! Choose 1 to " + taskManager.getCount());
         }
-
-        String taskDescription = parts[1].trim();
-        Task task = new Task(taskDescription);
-        taskManager.add(task);
-        System.out.printf("\tadded: %s%n", task);
+        return num;
     }
 }
