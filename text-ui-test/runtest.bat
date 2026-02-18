@@ -19,8 +19,8 @@ IF ERRORLEVEL 1 (
 del sources.txt
 
 REM run the program, feed commands from input.txt and redirect output
-REM Standard: Ensure the classpath points to the bin folder where Skywalker.class is
-java -classpath ..\bin Skywalker < input.txt > ACTUAL.TXT
+REM Standard: Ensure the classpath points to the bin folder where skywalker.class is
+java -classpath ..\bin skywalker < input.txt > ACTUAL.TXT
 
 REM compare the output to the expected output
 FC ACTUAL.TXT EXPECTED.TXT

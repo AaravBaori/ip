@@ -1,3 +1,5 @@
+package skywalker.exception;
+
 public class SkywalkerException extends Exception{
     /**
      * Constructor for the Exception Class, prints out the message provided

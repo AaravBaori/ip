@@ -1,3 +1,6 @@
+package skywalker.taskmanager;
+import skywalker.task.*;
+
 /**
  * Manages an internal collection of tasks.
  * Handles the storage, retrieval, and status updates of tasks within a fixed-size array.

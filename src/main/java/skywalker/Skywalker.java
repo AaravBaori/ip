@@ -1,3 +1,12 @@
+package skywalker;
+import skywalker.task.Task;
+import skywalker.task.Todo;
+import skywalker.task.Event;
+import skywalker.task.Deadline;
+import skywalker.taskmanager.TaskManager;
+import skywalker.exception.SkywalkerException;
+import skywalker.ui.SkywalkerUi;
+
 import java.util.Scanner;
 
 /**
@@ -14,7 +23,6 @@ public class Skywalker {
     static final String BYE = "bye";
 
     private final TaskManager taskManager = new TaskManager();
-    private final SkywalkerResponses skywalkerResponses = new SkywalkerResponses();
 
     /**
      * Initializes the Skywalker bot and begins the execution loop.
@@ -29,7 +37,7 @@ public class Skywalker {
      * processes input until the 'bye' command is received.
      */
     public void run() {
-        SkywalkerResponses.printWithLines(SkywalkerResponses.WELCOME_MESSAGE);
+        SkywalkerUi.printWithLines(SkywalkerUi.WELCOME_MESSAGE);
         Scanner scanner = new Scanner(System.in);
 
         while (scanner.hasNextLine()) {
@@ -47,16 +55,16 @@ public class Skywalker {
                     case DEADLINE: handleDeadline(userInput); break;
                     case EVENT:    handleEvent(userInput); break;
                     default:
-                        SkywalkerResponses.printWithLines(SkywalkerResponses.UNKNOWN_COMMAND);
+                        SkywalkerUi.printWithLines(SkywalkerUi.UNKNOWN_COMMAND);
                         break;
                 }
             } catch (SkywalkerException e) {
-                SkywalkerResponses.printWithLines("\t A disturbance in the Force: " + e.getMessage());
+                SkywalkerUi.printWithLines("\t A disturbance in the Force: " + e.getMessage());
             } catch (Exception e) {
-                SkywalkerResponses.printWithLines("\t Unexpected error in the galaxy: " + e.getMessage());
+                SkywalkerUi.printWithLines("\t Unexpected error in the galaxy: " + e.getMessage());
             }
         }
-        SkywalkerResponses.printWithLines(SkywalkerResponses.BYE_MESSAGE);
+        SkywalkerUi.printWithLines(SkywalkerUi.BYE_MESSAGE);
     }
 
     /**
@@ -74,14 +82,14 @@ public class Skywalker {
      */
     public void handleList() {
         if (taskManager.isEmpty()) {
-            SkywalkerResponses.printWithLines(SkywalkerResponses.MESSAGE_EMPTY_LIST);
+            SkywalkerUi.printWithLines(SkywalkerUi.MESSAGE_EMPTY_LIST);
             return;
         }
-        StringBuilder sb = new StringBuilder(SkywalkerResponses.MESSAGE_LIST_HEADER);
+        StringBuilder sb = new StringBuilder(SkywalkerUi.MESSAGE_LIST_HEADER);
         for (int i = 0; i < taskManager.getCount(); i++) {
             sb.append(String.format("\t  %d.%s\n", i + 1, taskManager.getTask(i)));
         }
-        SkywalkerResponses.printWithLines(sb.toString().trim());
+        SkywalkerUi.printWithLines(sb.toString().trim());
     }
 
     /**
@@ -93,12 +101,12 @@ public class Skywalker {
         try {
             int num = getMarkNumber(userInput);
             Task t = taskManager.getTask(num - 1);
-            if (t.isDone()) throw new SkywalkerException(SkywalkerResponses.ERROR_ALREADY_DONE);
+            if (t.isDone()) throw new SkywalkerException(SkywalkerUi.ERROR_ALREADY_DONE);
 
             t.setDone(true);
-            SkywalkerResponses.printWithLines(SkywalkerResponses.MESSAGE_MARK_SUCCESS + "\t    " + t);
+            SkywalkerUi.printWithLines(SkywalkerUi.MESSAGE_MARK_SUCCESS + "\t    " + t);
         } catch (NumberFormatException e) {
-            throw new SkywalkerException(SkywalkerResponses.ERROR_NOT_INT);
+            throw new SkywalkerException(SkywalkerUi.ERROR_NOT_INT);
         }
     }
 
@@ -111,12 +119,12 @@ public class Skywalker {
         try {
             int num = getMarkNumber(userInput);
             Task t = taskManager.getTask(num - 1);
-            if (!t.isDone()) throw new SkywalkerException(SkywalkerResponses.ERROR_NOT_DONE_YET);
+            if (!t.isDone()) throw new SkywalkerException(SkywalkerUi.ERROR_NOT_DONE_YET);
 
             t.setDone(false);
-            SkywalkerResponses.printWithLines(SkywalkerResponses.MESSAGE_UNMARK_SUCCESS + "\t    " + t);
+            SkywalkerUi.printWithLines(SkywalkerUi.MESSAGE_UNMARK_SUCCESS + "\t    " + t);
         } catch (NumberFormatException e) {
-            throw new SkywalkerException(SkywalkerResponses.ERROR_NOT_INT);
+            throw new SkywalkerException(SkywalkerUi.ERROR_NOT_INT);
         }
     }
 
@@ -128,7 +136,7 @@ public class Skywalker {
     public void handleTodo(String userInput) throws SkywalkerException {
         String[] parts = userInput.split(" ", 2);
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
-            throw new SkywalkerException(SkywalkerResponses.ERROR_EMPTY_TODO);
+            throw new SkywalkerException(SkywalkerUi.ERROR_EMPTY_TODO);
         }
         Task todo = new Todo(parts[1].trim());
         taskManager.add(todo);
@@ -143,11 +151,11 @@ public class Skywalker {
     public void handleDeadline(String userInput) throws SkywalkerException {
         String[] parts = userInput.split(" ", 2);
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
-            throw new SkywalkerException(SkywalkerResponses.ERROR_EMPTY_DEADLINE);
+            throw new SkywalkerException(SkywalkerUi.ERROR_EMPTY_DEADLINE);
         }
         String[] details = parts[1].split(" /by ", 2);
         if (details.length < 2 || details[1].trim().isEmpty()) {
-            throw new SkywalkerException(SkywalkerResponses.ERROR_MISSING_BY);
+            throw new SkywalkerException(SkywalkerUi.ERROR_MISSING_BY);
         }
         Task d = new Deadline(details[0].trim(), details[1].trim());
         taskManager.add(d);
@@ -162,10 +170,10 @@ public class Skywalker {
      */
     public void handleEvent(String userInput) throws SkywalkerException {
         String[] parts = userInput.split(" ", 2);
-        if (parts.length < 2 || parts[1].trim().isEmpty()) throw new SkywalkerException(SkywalkerResponses.ERROR_EMPTY_EVENT);
+        if (parts.length < 2 || parts[1].trim().isEmpty()) throw new SkywalkerException(SkywalkerUi.ERROR_EMPTY_EVENT);
 
         String args = parts[1];
-        if (!args.contains("/from") || !args.contains("/to")) throw new SkywalkerException(SkywalkerResponses.ERROR_MISSING_EVENT_DELIMITERS);
+        if (!args.contains("/from") || !args.contains("/to")) throw new SkywalkerException(SkywalkerUi.ERROR_MISSING_EVENT_DELIMITERS);
 
         int fIdx = args.indexOf("/from");
         int tIdx = args.indexOf("/to");
@@ -181,13 +189,13 @@ public class Skywalker {
                 to = args.substring(tIdx + 3, fIdx).trim();
                 from = args.substring(fIdx + 5).trim();
             }
-            if (desc.isEmpty() || from.isEmpty() || to.isEmpty()) throw new SkywalkerException(SkywalkerResponses.ERROR_EVENT_PART_EMPTY);
+            if (desc.isEmpty() || from.isEmpty() || to.isEmpty()) throw new SkywalkerException(SkywalkerUi.ERROR_EVENT_PART_EMPTY);
 
             Task e = new Event(from, to, desc);
             taskManager.add(e);
             notifyAdd(e);
         } catch (Exception e) {
-            throw new SkywalkerException(SkywalkerResponses.ERROR_EVENT_PART_EMPTY);
+            throw new SkywalkerException(SkywalkerUi.ERROR_EVENT_PART_EMPTY);
         }
     }
 
@@ -196,9 +204,9 @@ public class Skywalker {
      * * @param task The task that was successfully added.
      */
     private void notifyAdd(Task task) {
-        String message = SkywalkerResponses.MESSAGE_ADD_SUCCESS + "\t    " + task + "\n" +
-                SkywalkerResponses.getTaskCountMessage(taskManager.getCount());
-        SkywalkerResponses.printWithLines(message);
+        String message = SkywalkerUi.MESSAGE_ADD_SUCCESS + "\t    " + task + "\n" +
+                SkywalkerUi.getTaskCountMessage(taskManager.getCount());
+        SkywalkerUi.printWithLines(message);
     }
 
     /**
@@ -209,7 +217,7 @@ public class Skywalker {
      */
     private int getMarkNumber(String userInput) throws SkywalkerException {
         String[] parts = userInput.split(" ");
-        if (parts.length < 2) throw new SkywalkerException(SkywalkerResponses.ERROR_INVALID_FORMAT);
+        if (parts.length < 2) throw new SkywalkerException(SkywalkerUi.ERROR_INVALID_FORMAT);
 
         int num = Integer.parseInt(parts[1]);
         if (num <= 0 || num > taskManager.getCount()) {

@@ -1,4 +1,6 @@
-public class SkywalkerResponses {
+package skywalker.ui;
+
+public class SkywalkerUi {
     /** UI Formatting. */
     public static final String LINE_BREAK = "\t______________________________________________________________________";
 

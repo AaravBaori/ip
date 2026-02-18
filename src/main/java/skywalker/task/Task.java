@@ -1,3 +1,5 @@
+package skywalker.task;
+
 /**
  * Represents a generic mission or task in the Skywalker system.
  * This class serves as a base for specific task types like Todo, Deadline, and Event.
