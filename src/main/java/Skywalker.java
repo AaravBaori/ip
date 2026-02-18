@@ -1,6 +1,9 @@
 import java.util.Scanner;
-import skywalker.responses.SkywalkerResponses;
 
+/**
+ * Main entry point for the Skywalker chatbot.
+ * Handles user input, command routing, and task orchestration.
+ */
 public class Skywalker {
     static final String UNMARK = "unmark";
     static final String TODO = "todo";
@@ -11,11 +14,20 @@ public class Skywalker {
     static final String BYE = "bye";
 
     private final TaskManager taskManager = new TaskManager();
+    private final SkywalkerResponses skywalkerResponses = new SkywalkerResponses();
 
+    /**
+     * Initializes the Skywalker bot and begins the execution loop.
+     * * @param args Command line arguments (not used).
+     */
     public static void main(String[] args) {
         new Skywalker().run();
     }
 
+    /**
+     * Starts the main program loop. Welcomes the user and continuously
+     * processes input until the 'bye' command is received.
+     */
     public void run() {
         SkywalkerResponses.printWithLines(SkywalkerResponses.WELCOME_MESSAGE);
         Scanner scanner = new Scanner(System.in);
@@ -47,10 +59,19 @@ public class Skywalker {
         SkywalkerResponses.printWithLines(SkywalkerResponses.BYE_MESSAGE);
     }
 
+    /**
+     * Extracts the primary command keyword from the user's raw input string.
+     * * @param userInput The full line of text entered by the user.
+     * @return The first word of the input, representing the command.
+     */
     public String handleUserInput(String userInput) {
         return userInput.split(" ")[0];
     }
 
+    /**
+     * Displays all current tasks in the task manager.
+     * If the list is empty, a themed empty-state message is shown.
+     */
     public void handleList() {
         if (taskManager.isEmpty()) {
             SkywalkerResponses.printWithLines(SkywalkerResponses.MESSAGE_EMPTY_LIST);
@@ -63,6 +84,11 @@ public class Skywalker {
         SkywalkerResponses.printWithLines(sb.toString().trim());
     }
 
+    /**
+     * Marks a specific task as completed based on its index in the list.
+     * * @param userInput Raw input containing the task number.
+     * @throws SkywalkerException If the input is invalid or the task is already done.
+     */
     public void handleMark(String userInput) throws SkywalkerException {
         try {
             int num = getMarkNumber(userInput);
@@ -76,19 +102,29 @@ public class Skywalker {
         }
     }
 
+    /**
+     * Unmarks a completed task, reverting its status to not done.
+     * * @param userInput Raw input containing the task number.
+     * @throws SkywalkerException If the input is invalid or the task isn't marked yet.
+     */
     public void handleUnmark(String userInput) throws SkywalkerException {
         try {
             int num = getMarkNumber(userInput);
             Task t = taskManager.getTask(num - 1);
             if (!t.isDone()) throw new SkywalkerException(SkywalkerResponses.ERROR_NOT_DONE_YET);
 
-            t.setDone(false); // Fixed: set to false
-            SkywalkerResponses.printWithLines(SkywalkerResponses.MESSAGE_UNMARK_SUCCESS + "\t    " + t); // Fixed: unmark message
+            t.setDone(false);
+            SkywalkerResponses.printWithLines(SkywalkerResponses.MESSAGE_UNMARK_SUCCESS + "\t    " + t);
         } catch (NumberFormatException e) {
             throw new SkywalkerException(SkywalkerResponses.ERROR_NOT_INT);
         }
     }
 
+    /**
+     * Creates and adds a simple 'Todo' task to the manager.
+     * * @param userInput Raw input containing the task description.
+     * @throws SkywalkerException If the description is empty.
+     */
     public void handleTodo(String userInput) throws SkywalkerException {
         String[] parts = userInput.split(" ", 2);
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
@@ -99,6 +135,11 @@ public class Skywalker {
         notifyAdd(todo);
     }
 
+    /**
+     * Creates and adds a 'Deadline' task with a specific due date/time.
+     * * @param userInput Raw input containing description and /by clause.
+     * @throws SkywalkerException If parts are missing or formatted incorrectly.
+     */
     public void handleDeadline(String userInput) throws SkywalkerException {
         String[] parts = userInput.split(" ", 2);
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
@@ -113,6 +154,12 @@ public class Skywalker {
         notifyAdd(d);
     }
 
+    /**
+     * Creates and adds an 'Event' task with a start and end time.
+     * This method supports flexible flag order for /from and /to.
+     * * @param userInput Raw input containing description, /from, and /to clauses.
+     * @throws SkywalkerException If the event structure is invalid or parts are empty.
+     */
     public void handleEvent(String userInput) throws SkywalkerException {
         String[] parts = userInput.split(" ", 2);
         if (parts.length < 2 || parts[1].trim().isEmpty()) throw new SkywalkerException(SkywalkerResponses.ERROR_EMPTY_EVENT);
@@ -144,12 +191,22 @@ public class Skywalker {
         }
     }
 
+    /**
+     * Formats and prints a success message whenever a task is added.
+     * * @param task The task that was successfully added.
+     */
     private void notifyAdd(Task task) {
         String message = SkywalkerResponses.MESSAGE_ADD_SUCCESS + "\t    " + task + "\n" +
                 SkywalkerResponses.getTaskCountMessage(taskManager.getCount());
         SkywalkerResponses.printWithLines(message);
     }
 
+    /**
+     * Validates and parses the task index from user input for mark/unmark commands.
+     * * @param userInput The raw input string from the user.
+     * @return The validated integer representing the task number.
+     * @throws SkywalkerException If the number is out of bounds or the command is malformed.
+     */
     private int getMarkNumber(String userInput) throws SkywalkerException {
         String[] parts = userInput.split(" ");
         if (parts.length < 2) throw new SkywalkerException(SkywalkerResponses.ERROR_INVALID_FORMAT);
