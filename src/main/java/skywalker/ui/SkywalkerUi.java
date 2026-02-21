@@ -14,6 +14,7 @@ public class SkywalkerUi {
     public static final String MESSAGE_EMPTY_LIST = "\t  Your archives are incomplete! There are no tasks here.";
     public static final String MESSAGE_LIST_HEADER = "\t  Here are the missions in your Jedi Holocron:\n";
     public static final String MESSAGE_ADD_SUCCESS = "\t  R2-D2 has logged this mission into the system:\n";
+    public static final String MESSAGE_DELETE_SUCCESS = "\t  R2-D2 has deleted this mission from the system:\n";
     public static final String MESSAGE_MARK_SUCCESS = "\t  Impressive. Most impressive. I've marked:\n";
     public static final String MESSAGE_UNMARK_SUCCESS = "\t  Patience! I've marked this task as not yet completed:\n";
 

@@ -20,6 +20,7 @@ public class Skywalker {
     static final String DEADLINE = "deadline";
     static final String EVENT = "event";
     static final String LIST = "list";
+    static final String DELETE = "delete";
     static final String BYE = "bye";
 
     private final TaskManager taskManager = new TaskManager();
@@ -54,6 +55,7 @@ public class Skywalker {
                     case TODO:     handleTodo(userInput); break;
                     case DEADLINE: handleDeadline(userInput); break;
                     case EVENT:    handleEvent(userInput); break;
+                    case DELETE: handleDelete(userInput); break;
                     default:
                         SkywalkerUi.printWithLines(SkywalkerUi.UNKNOWN_COMMAND);
                         break;
@@ -89,7 +91,7 @@ public class Skywalker {
         for (int i = 0; i < taskManager.getCount(); i++) {
             sb.append(String.format("\t  %d.%s\n", i + 1, taskManager.getTask(i)));
         }
-        SkywalkerUi.printWithLines(sb.toString().trim());
+        SkywalkerUi.printWithLines(sb.toString());
     }
 
     /**
@@ -204,8 +206,7 @@ public class Skywalker {
      * * @param task The task that was successfully added.
      */
     private void notifyAdd(Task task) {
-        String message = SkywalkerUi.MESSAGE_ADD_SUCCESS + "\t    " + task + "\n" +
-                SkywalkerUi.getTaskCountMessage(taskManager.getCount());
+        String message = SkywalkerUi.MESSAGE_ADD_SUCCESS + "\t    " + task + "\n" + SkywalkerUi.getTaskCountMessage(taskManager.getCount());
         SkywalkerUi.printWithLines(message);
     }
 
@@ -224,5 +225,24 @@ public class Skywalker {
             throw new SkywalkerException("\t That mission does not exist in the Jedi archives! Choose 1 to " + taskManager.getCount());
         }
         return num;
+    }
+
+    private void handleDelete(String userInput) throws SkywalkerException{
+        String[] parts = userInput.split(" ");
+
+        if (parts.length < 2 || parts[1].trim().isEmpty()) throw new SkywalkerException(SkywalkerUi.ERROR_EMPTY_EVENT);
+
+        String taskNumberStr = parts[1];
+        int taskNumberInt;
+        try{
+            taskNumberInt = Integer.parseInt(taskNumberStr);
+        }catch (NumberFormatException e){
+            System.out.println("Disturbance in the force: " + e.getMessage());
+            throw new SkywalkerException(SkywalkerUi.ERROR_INVALID_FORMAT);
+        }
+        System.out.println(SkywalkerUi.MESSAGE_DELETE_SUCCESS + "\t\t" + taskManager.getTask(taskNumberInt-1).toString());
+        taskManager.delete(taskNumberInt - 1);
+        System.out.println("\tNow you have " + taskManager.getCount() + " missions in the list");
+
     }
 }
