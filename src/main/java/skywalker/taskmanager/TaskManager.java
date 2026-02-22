@@ -1,20 +1,24 @@
 package skywalker.taskmanager;
+import skywalker.exception.SkywalkerException;
 import skywalker.task.*;
+
+import java.io.File;
+import java.util.ArrayList;
+import skywalker.FileSystem;
 
 /**
  * Manages an internal collection of tasks.
  * Handles the storage, retrieval, and status updates of tasks within a fixed-size array.
  */
-public class TaskManager {
-
-    /** The maximum number of tasks that can be stored in the archives. */
-    private final int MAX = 100;
+public class TaskManager{
 
     /** Array to store the task objects. */
-    private Task[] allTasks = new Task[MAX];
+    private final ArrayList<Task> allTasks = new ArrayList<>();
 
-    /** The current number of tasks stored in the array. */
-    private int count = 0;
+    public void pastEntries() throws SkywalkerException {
+        FileSystem f = new FileSystem("./SkywalkerData.txt");
+        f.parseFile(allTasks);
+    }
 
     /**
      * Adds a new task to the task list.
@@ -22,25 +26,7 @@ public class TaskManager {
      * @param task The Task object to be added to the archives.
      */
     public void add(Task task){
-        allTasks[count++] = task;
-    }
-
-    /**
-     * Marks a task as completed based on its array index.
-     *
-     * @param index The zero-based index of the task to be marked.
-     */
-    public void mark(int index){
-        allTasks[index].setDone(true);
-    }
-
-    /**
-     * Reverts a task's status to not completed based on its array index.
-     *
-     * @param index The zero-based index of the task to be unmarked.
-     */
-    public void unmark(int index){
-        allTasks[index].setDone(false);
+        allTasks.add(task);
     }
 
     /**
@@ -48,7 +34,7 @@ public class TaskManager {
      *
      * @return An array of Task objects, including null entries up to MAX.
      */
-    public Task[] getAllTasks(){
+    public ArrayList<Task> getAllTasks(){
         return allTasks;
     }
 
@@ -59,7 +45,7 @@ public class TaskManager {
      * @return The Task object at the specified index.
      */
     public Task getTask(int index){
-        return allTasks[index];
+        return allTasks.get(index);
     }
 
     /**
@@ -68,7 +54,7 @@ public class TaskManager {
      * @return The integer count of tasks currently in the list.
      */
     public int getCount(){
-        return this.count;
+        return allTasks.toArray().length;
     }
 
     /**
@@ -79,4 +65,6 @@ public class TaskManager {
     public boolean isEmpty(){
         return this.getCount() == 0;
     }
+
+    public void delete(Integer index){ allTasks.remove(allTasks.get(index)); }
 }
