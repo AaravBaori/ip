@@ -25,4 +25,13 @@ public class Todo extends Task {
     public String toString(){
         return "[T]" + super.toString();
     }
+
+    public String getTaskSymbol(){
+        return "T";
+    }
+
+    public String fileFormat(){
+        int status = this.isDone() ? 1 : 0;
+        return this.getTaskSymbol() + " | " + status + " | " + this.description + "\n";
+    }
 }
