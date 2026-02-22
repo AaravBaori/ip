@@ -6,7 +6,9 @@ import skywalker.task.Deadline;
 import skywalker.taskmanager.TaskManager;
 import skywalker.exception.SkywalkerException;
 import skywalker.ui.SkywalkerUi;
+import skywalker.FileSystem;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -24,12 +26,13 @@ public class Skywalker {
     static final String BYE = "bye";
 
     private final TaskManager taskManager = new TaskManager();
+    private FileSystem file = new FileSystem("./SkywalkerData.txt");
 
     /**
      * Initializes the Skywalker bot and begins the execution loop.
      * * @param args Command line arguments (not used).
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SkywalkerException {
         new Skywalker().run();
     }
 
@@ -37,8 +40,9 @@ public class Skywalker {
      * Starts the main program loop. Welcomes the user and continuously
      * processes input until the 'bye' command is received.
      */
-    public void run() {
+    public void run() throws SkywalkerException {
         SkywalkerUi.printWithLines(SkywalkerUi.WELCOME_MESSAGE);
+        file.parseFile(taskManager.getAllTasks());
         Scanner scanner = new Scanner(System.in);
 
         while (scanner.hasNextLine()) {
@@ -106,6 +110,7 @@ public class Skywalker {
             if (t.isDone()) throw new SkywalkerException(SkywalkerUi.ERROR_ALREADY_DONE);
 
             t.setDone(true);
+            file.updateFile(num - 1, true);
             SkywalkerUi.printWithLines(SkywalkerUi.MESSAGE_MARK_SUCCESS + "\t    " + t);
         } catch (NumberFormatException e) {
             throw new SkywalkerException(SkywalkerUi.ERROR_NOT_INT);
@@ -124,6 +129,7 @@ public class Skywalker {
             if (!t.isDone()) throw new SkywalkerException(SkywalkerUi.ERROR_NOT_DONE_YET);
 
             t.setDone(false);
+            file.updateFile(num - 1, false);
             SkywalkerUi.printWithLines(SkywalkerUi.MESSAGE_UNMARK_SUCCESS + "\t    " + t);
         } catch (NumberFormatException e) {
             throw new SkywalkerException(SkywalkerUi.ERROR_NOT_INT);
@@ -142,6 +148,7 @@ public class Skywalker {
         }
         Task todo = new Todo(parts[1].trim());
         taskManager.add(todo);
+        file.addTask(todo);
         notifyAdd(todo);
     }
 
@@ -161,6 +168,7 @@ public class Skywalker {
         }
         Task d = new Deadline(details[0].trim(), details[1].trim());
         taskManager.add(d);
+        file.addTask(d);
         notifyAdd(d);
     }
 
@@ -195,6 +203,7 @@ public class Skywalker {
 
             Task e = new Event(from, to, desc);
             taskManager.add(e);
+            file.addTask(e);
             notifyAdd(e);
         } catch (Exception e) {
             throw new SkywalkerException(SkywalkerUi.ERROR_EVENT_PART_EMPTY);
@@ -227,7 +236,7 @@ public class Skywalker {
         return num;
     }
 
-    private void handleDelete(String userInput) throws SkywalkerException{
+    private void handleDelete(String userInput) throws SkywalkerException, IOException {
         String[] parts = userInput.split(" ");
 
         if (parts.length < 2 || parts[1].trim().isEmpty()) throw new SkywalkerException(SkywalkerUi.ERROR_EMPTY_EVENT);
@@ -241,6 +250,7 @@ public class Skywalker {
             throw new SkywalkerException(SkywalkerUi.ERROR_INVALID_FORMAT);
         }
         System.out.println(SkywalkerUi.MESSAGE_DELETE_SUCCESS + "\t\t" + taskManager.getTask(taskNumberInt-1).toString());
+        file.deleteTask(taskNumberInt - 1);
         taskManager.delete(taskNumberInt - 1);
         System.out.println("\tNow you have " + taskManager.getCount() + " missions in the list");
 
