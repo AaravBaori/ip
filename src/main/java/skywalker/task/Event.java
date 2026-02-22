@@ -71,4 +71,13 @@ public class Event extends Task {
     public String getTo(){
         return this.to;
     }
+
+    public String getTaskSymbol() {
+        return "E";
+    }
+
+    public String fileFormat(){
+        int status = this.isDone() ? 1 : 0;
+        return this.getTaskSymbol() + " | " + status + " | " + this.description + " | From: " + this.from + " | To: " + this.to + "\n";
+    }
 }

@@ -1,15 +1,24 @@
 package skywalker.taskmanager;
+import skywalker.exception.SkywalkerException;
 import skywalker.task.*;
+
+import java.io.File;
 import java.util.ArrayList;
+import skywalker.FileSystem;
 
 /**
  * Manages an internal collection of tasks.
  * Handles the storage, retrieval, and status updates of tasks within a fixed-size array.
  */
-public class TaskManager {
+public class TaskManager{
 
     /** Array to store the task objects. */
     private final ArrayList<Task> allTasks = new ArrayList<>();
+
+    public void pastEntries() throws SkywalkerException {
+        FileSystem f = new FileSystem("./SkywalkerData.txt");
+        f.parseFile(allTasks);
+    }
 
     /**
      * Adds a new task to the task list.
