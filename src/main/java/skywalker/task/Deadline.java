@@ -49,4 +49,13 @@ public class Deadline extends Task {
     public String getBy(){
         return this.by;
     }
+
+    public String getTaskSymbol() {
+        return "D";
+    }
+
+    public String fileFormat(){
+        int status = this.isDone() ? 1 : 0;
+        return this.getTaskSymbol() + " | " + status + " | " + this.description + " | By: " + this.by + "\n";
+    }
 }

@@ -4,7 +4,7 @@ package skywalker.task;
  * Represents a generic mission or task in the Skywalker system.
  * This class serves as a base for specific task types like Todo, Deadline, and Event.
  */
-public class Task {
+public abstract class Task {
     /** The description of the task. */
     protected String description;
 
@@ -44,6 +44,7 @@ public class Task {
      * Updates the completion status of the task.
      *
      * @param done True to mark the task as completed, false to unmark it.
+     * @return
      */
     public void setDone(boolean done){
         this.isDone = done;
@@ -68,4 +69,8 @@ public class Task {
     public boolean isDone() {
         return this.isDone;
     }
+
+    public abstract String getTaskSymbol();
+
+    public abstract String fileFormat();
 }
