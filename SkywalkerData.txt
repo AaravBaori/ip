@@ -1,3 +1,4 @@
-D | 1 | return book | By: June 6th
-E | 1 | project meeting | From: Aug 6th 2pm | To: 4pm
-T | 1 | join sports club
+T | 0 | book
+T | 1 | adiavd
+T | 0 | akfbakv
+T | 0 | afbhada
