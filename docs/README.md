@@ -132,22 +132,23 @@ Skywalker saves your mission list automatically after every change, so no manual
 
 ## FAQ
 
-**Q**: How is my data saved?  
-**A**: Skywalker data is saved automatically after every command that alters the list. There is no need to save manually. It is located in `./SkywalkerData.txt` in the same directory as your `.jar` file.
+**Q**: How are my Jedi archives saved?  
+**A**: Skywalker automatically saves your missions to the hard drive after every change (add, delete, mark, or unmark). You don't need to save manually. The data is stored in a file named `./SkywalkerData.txt` located in the exact same directory as your application.
 
-**Q**: How do I transfer my data to another terminal?  
-**A**: Set up Skywalker on the new machine, then simply replace its `SkywalkerData.txt` with your existing file.
+**Q**: Can I transfer my missions to another computer or terminal?  
+**A**: Yes! Simply copy the `SkywalkerData.txt` file from your current directory and place it in the same directory as the `skywalker.jar` file on your new machine.
 
-**Q**: What happens if I accidentally delete a task?  
-**A**: Deleted missions cannot be recovered from within the app using the Force. It is highly recommended to keep periodic backups of your `SkywalkerData.txt` file.
+**Q**: What happens if I accidentally delete a task? Can I use the Force to bring it back?  
+**A**: Unfortunately, once a mission is deleted, it is lost to the dark side and cannot be recovered from within the application. It is wise for a Jedi to make regular backups of the `SkywalkerData.txt` file.
 
 ---
 
 ## Troubleshooting Tips
 
-1. **Invalid data file format** — If `SkywalkerData.txt` is edited incorrectly, Skywalker may fail to parse the archives and start with an empty list. Always back up the file before editing it by hand.
-2. **"A disturbance in the Force" errors** — Pay close attention to the error messages provided by the UI. Ensure you are using the correct delimiters (`/by`, `/from`, `/to`) for Deadlines and Events.
-
+1. **"A disturbance in the Force" errors** — If you see this message, it means your command format is incorrect. Double-check that you are using the exact keywords and the required delimiters (`/by` for deadlines, `/from` and `/to` for events).
+2. **Missing descriptions or times** — Skywalker will reject commands that lack necessary details. For example, typing just `todo` or `deadline /by tonight` without a description will trigger an error. The archives require complete records.
+3. **"Error loading archives" on startup** — This happens if your `./SkywalkerData.txt` file is corrupted or formatted incorrectly via manual editing. If this occurs, Skywalker may fail to load your past tasks. Always back up the file before attempting to manually edit the sacred texts.
+4. **Unexpected date formats** — Skywalker currently stores dates and times *exactly* as you type them as text (e.g., "tonight", "Next Friday", "2026-03-28"). If a date looks wrong in your list, delete the task and re-add it with your preferred phrasing.
 ---
 
 ## Command Summary
