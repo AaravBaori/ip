@@ -1,9 +1,10 @@
 package skywalker;
+
 import skywalker.command.Command;
+import skywalker.exception.SkywalkerException;
 import skywalker.filesystem.FileSystem;
 import skywalker.parser.Parser;
 import skywalker.taskmanager.TaskList;
-import skywalker.exception.SkywalkerException;
 import skywalker.ui.SkywalkerUi;
 
 import java.util.Scanner;
@@ -13,19 +14,14 @@ import java.util.Scanner;
  * Handles user input, command routing, and task orchestration.
  */
 public class Skywalker {
-    static final String UNMARK = "unmark";
-    static final String TODO = "todo";
-    static final String MARK = "mark";
-    static final String DEADLINE = "deadline";
-    static final String EVENT = "event";
-    static final String LIST = "list";
-    static final String DELETE = "delete";
-    static final String BYE = "bye";
-    // = new FileSystem("./SkywalkerData.txt");
+    /** Initializes the static task list used across the application. */
     private final TaskList tasks = new TaskList();
-    private final SkywalkerUi ui = new SkywalkerUi();
     private final FileSystem file;
 
+    /**
+     * Constructs a new Skywalker instance and loads saved tasks from disk.
+     * If the save file cannot be read, an error message is displayed and the app starts fresh.
+     */
     public Skywalker() {
         file = new FileSystem("./SkywalkerData.txt");
 
@@ -37,25 +33,28 @@ public class Skywalker {
     }
 
     /**
-     * Initializes the Skywalker bot and begins the execution loop.
-     * * @param args Command line arguments (not used).
+     * Creates a new Skywalker instance and starts the main execution loop.
+     *
+     * @param args Command line arguments (not used).
      */
-    public static void main(String[] args) throws SkywalkerException {
+    public static void main(String[] args) {
         new Skywalker().run();
     }
 
     /**
-     * Starts the main program loop. Welcomes the user and continuously
-     * processes input until the 'bye' command is received.
+     * Starts the main program loop.
+     * Welcomes the user and continuously processes input until the 'bye' command is received.
+     * All exceptions are caught and displayed to the user without terminating the loop.
      */
-    public void run() throws SkywalkerException {
+    public void run() {
         SkywalkerUi.printWithLines(SkywalkerUi.WELCOME_MESSAGE);
-        file.parseFile(TaskList.getTasks());
         Scanner scanner = new Scanner(System.in);
 
         while (scanner.hasNextLine()) {
             String userInput = scanner.nextLine();
-            if (userInput.equalsIgnoreCase(BYE)) break;
+            if (userInput.equalsIgnoreCase(Parser.COMMAND_BYE)) {
+                break;
+            }
 
             try {
                 Command command = Parser.parse(userInput);

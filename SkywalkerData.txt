@@ -1,4 +1,2 @@
-T | 0 | book
-T | 1 | adiavd
+T | 0 | adiavd
 T | 0 | akfbakv
-T | 0 | afbhada
