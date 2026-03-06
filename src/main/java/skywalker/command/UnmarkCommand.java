@@ -1,15 +1,15 @@
 package skywalker.command;
 
-import skywalker.filesystem.FileSystem;
 import skywalker.exception.SkywalkerException;
+import skywalker.filesystem.FileSystem;
 import skywalker.task.Task;
 import skywalker.taskmanager.TaskList;
 import skywalker.ui.SkywalkerUi;
 
-public class MarkCommand extends Command {
+public class UnmarkCommand extends Command{
     private final String userInput;
 
-    public MarkCommand(String userInput) {
+    public UnmarkCommand(String userInput) {
         this.userInput = userInput;
     }
 
@@ -18,10 +18,10 @@ public class MarkCommand extends Command {
         try {
             int num = getMarkNumber(userInput);
             Task t = TaskList.getTask(num - 1);
-            if (t.isDone()) throw new SkywalkerException(SkywalkerUi.ERROR_ALREADY_DONE);
+            if (!t.isDone()) throw new SkywalkerException(SkywalkerUi.ERROR_NOT_DONE_YET);
 
-            t.setDone(true);
-            file.updateFile(num - 1, true);
+            t.setDone(false);
+            file.updateFile(num - 1, false);
             SkywalkerUi.printWithLines(SkywalkerUi.MESSAGE_MARK_SUCCESS + "\t    " + t);
         } catch (NumberFormatException e) {
             throw new SkywalkerException(SkywalkerUi.ERROR_NOT_INT);

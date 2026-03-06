@@ -4,6 +4,6 @@ import skywalker.ui.SkywalkerUi;
 import skywalker.filesystem.FileSystem;
 
 public abstract class Command {
-    public abstract void execute(TaskList tasks, SkywalkerUi ui, FileSystem fileSystem) throws Exception;
+    public abstract void execute(FileSystem fileSystem) throws Exception;
     public boolean isExit() { return false; }
 }

@@ -77,6 +77,7 @@ public class FileSystem {
     }
 
     public void parseFile(ArrayList<Task> tasks) throws SkywalkerException {
+        tasks.clear();
         try(Scanner myReader = new Scanner(f)){
             while (myReader.hasNextLine()){
                 String data = myReader.nextLine();

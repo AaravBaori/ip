@@ -6,7 +6,7 @@ import skywalker.ui.SkywalkerUi;
 
 public class ListCommand extends Command {
     @Override
-    public void execute(TaskList tasks, SkywalkerUi ui, FileSystem fileSystem) throws Exception {
+    public void execute(FileSystem fileSystem) throws Exception {
         if (TaskList.isEmpty()) {
             SkywalkerUi.printWithLines(SkywalkerUi.MESSAGE_EMPTY_LIST);
             return;

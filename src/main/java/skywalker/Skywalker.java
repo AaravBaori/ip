@@ -59,7 +59,7 @@ public class Skywalker {
 
             try {
                 Command command = Parser.parse(userInput);
-                command.execute(tasks, ui, file);
+                command.execute(file);
             } catch (SkywalkerException e) {
                 SkywalkerUi.printWithLines("\t A disturbance in the Force: " + e.getMessage());
             } catch (Exception e) {

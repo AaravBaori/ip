@@ -14,7 +14,8 @@ public class AddDeadlineCommand extends Command {
     }
 
     @Override
-    public void execute(TaskList tasks, SkywalkerUi ui, FileSystem fileSystem) throws Exception {
+    public void execute(FileSystem fileSystem) throws Exception {
+
         String[] details = this.part.split(" /by ", 2);
         if (details.length < 2 || details[1].trim().isEmpty()) {
             throw new SkywalkerException(SkywalkerUi.ERROR_MISSING_BY);

@@ -7,7 +7,7 @@ import skywalker.ui.SkywalkerUi;
 public class ExitCommand extends Command {
 
     @Override
-    public void execute(TaskList tasks, SkywalkerUi ui, FileSystem storage) {
+    public void execute(FileSystem storage) {
         SkywalkerUi.printWithLines(SkywalkerUi.BYE_MESSAGE);
     }
 

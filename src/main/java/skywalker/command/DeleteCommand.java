@@ -13,7 +13,7 @@ public class DeleteCommand extends Command{
     }
 
     @Override
-    public void execute(TaskList tasks, SkywalkerUi ui, FileSystem file) throws Exception {
+    public void execute(FileSystem file) throws Exception {
         int taskNumberInt;
         try{
             taskNumberInt = Integer.parseInt(taskNumberStr);

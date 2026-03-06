@@ -13,7 +13,7 @@ public class AddTodoCommand extends Command {
     }
 
     @Override
-    public void execute(TaskList tasks, SkywalkerUi ui, FileSystem fileSystem) throws Exception {
+    public void execute(FileSystem fileSystem) throws Exception {
         Task todo = new Todo(this.part.trim());
         TaskList.add(todo);
         fileSystem.addTask(todo);

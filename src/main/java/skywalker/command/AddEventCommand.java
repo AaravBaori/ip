@@ -14,7 +14,7 @@ public class AddEventCommand extends Command {
     }
 
     @Override
-    public void execute(TaskList tasks, SkywalkerUi ui, FileSystem fileSystem) throws Exception {
+    public void execute(FileSystem fileSystem) throws Exception {
         String args = this.part;
         if (!args.contains("/from") || !args.contains("/to")) throw new SkywalkerException(SkywalkerUi.ERROR_MISSING_EVENT_DELIMITERS);
 
