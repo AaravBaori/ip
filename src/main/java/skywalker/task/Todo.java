@@ -2,7 +2,7 @@ package skywalker.task;
 
 /**
  * Represents a simple task without any date or time constraints.
- * A Todo object focuses solely on the description of the mission.
+ * A Todo focuses solely on the description of the mission.
  */
 public class Todo extends Task {
 
@@ -11,7 +11,7 @@ public class Todo extends Task {
      *
      * @param description The text describing the mission.
      */
-    public Todo(String description){
+    public Todo(String description) {
         super(description);
     }
 
@@ -22,15 +22,27 @@ public class Todo extends Task {
      * @return Formatted string: [T][Status] Description.
      */
     @Override
-    public String toString(){
+    public String toString() {
         return "[T]" + super.toString();
     }
 
-    public String getTaskSymbol(){
+    /**
+     * Returns the task type symbol for a Todo.
+     *
+     * @return "T".
+     */
+    @Override
+    public String getTaskSymbol() {
         return "T";
     }
 
-    public String fileFormat(){
+    /**
+     * Returns the formatted string used to persist this Todo to the save file.
+     *
+     * @return File-format string: {@code T | <status> | <description>}.
+     */
+    @Override
+    public String fileFormat() {
         int status = this.isDone() ? 1 : 0;
         return this.getTaskSymbol() + " | " + status + " | " + this.description + "\n";
     }

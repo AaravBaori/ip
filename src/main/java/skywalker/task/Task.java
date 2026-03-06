@@ -2,24 +2,25 @@ package skywalker.task;
 
 /**
  * Represents a generic mission or task in the Skywalker system.
- * This class serves as a base for specific task types like Todo, Deadline, and Event.
+ * Serves as the base class for specific task types: {@link Todo}, {@link Deadline}, and {@link Event}.
  */
 public abstract class Task {
+
     /** The description of the task. */
     protected String description;
 
     /** The completion status of the task. */
-    protected boolean isDone;
+    protected boolean done;
 
     /**
      * Constructs a new Task with the specified description.
-     * By default, the task is initialized as not completed.
+     * The task is initialised as not completed by default.
      *
      * @param description The text describing the mission.
      */
     public Task(String description) {
         this.description = description;
-        this.isDone = false;
+        this.done = false;
     }
 
     /**
@@ -28,11 +29,11 @@ public abstract class Task {
      * @return "X" if the task is done, a blank space " " otherwise.
      */
     public String getStatusIcon() {
-        return (isDone ? "X" : " ");
+        return (done ? "X" : " ");
     }
 
     /**
-     * Gets the description of the task.
+     * Returns the description of the task.
      *
      * @return The description string.
      */
@@ -43,34 +44,42 @@ public abstract class Task {
     /**
      * Updates the completion status of the task.
      *
-     * @param done True to mark the task as completed, false to unmark it.
-     * @return
+     * @param isDone True to mark the task as completed, false to unmark it.
      */
-    public void setDone(boolean done){
-        this.isDone = done;
+    public void setDone(boolean isDone) {
+        this.done = isDone;
     }
 
     /**
-     * Returns a string representation of the task, including its status icon
-     * and description.
-     *
-     * @return Formatted string: [Status] Description.
-     */
-    @Override
-    public String toString(){
-        return "[" + this.getStatusIcon() + "] " + this.getDescription();
-    }
-
-    /**
-     * Checks if the task has been completed.
+     * Returns whether the task has been completed.
      *
      * @return True if done, false otherwise.
      */
     public boolean isDone() {
-        return this.isDone;
+        return this.done;
     }
 
+    /**
+     * Returns a string representation of the task, including its status icon and description.
+     *
+     * @return Formatted string: [Status] Description.
+     */
+    @Override
+    public String toString() {
+        return "[" + this.getStatusIcon() + "] " + this.getDescription();
+    }
+
+    /**
+     * Returns the single-character symbol identifying the task type (e.g., "T", "D", "E").
+     *
+     * @return The task type symbol.
+     */
     public abstract String getTaskSymbol();
 
+    /**
+     * Returns the formatted string used to persist this task to the save file.
+     *
+     * @return The file-format string for this task.
+     */
     public abstract String fileFormat();
 }

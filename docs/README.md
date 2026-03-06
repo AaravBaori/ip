@@ -1,30 +1,168 @@
-# skywalker User Guide
+# Skywalker - User Guide
 
-// Update the title above to match the actual product name
+Skywalker is a **desktop task manager built for the Jedi Order**. Whether you're tracking mission deadlines, planning council events, or just jotting down your training exercises, Skywalker keeps everything organized through a clean, keyboard-first command-line interface.
 
-// Product screenshot goes here
+---
 
-// Product intro goes here
+## Table of Contents
+* [Quick Start](#quick-start)
+* [Features](#features)
+    * [Adding a Todo: `todo`](#adding-a-todo--todo)
+    * [Adding a Deadline: `deadline`](#adding-a-deadline--deadline)
+    * [Adding an Event: `event`](#adding-an-event--event)
+    * [Listing all Tasks: `list`](#listing-all-tasks--list)
+    * [Marking a Task: `mark`](#marking-a-task--mark)
+    * [Unmarking a Task: `unmark`](#unmarking-a-task--unmark)
+    * [Deleting a Task: `delete`](#deleting-a-task--delete)
+    * [Locating Tasks by Name: `find`](#locating-tasks-by-name--find)
+    * [Exiting the Program: `bye`](#exiting-the-program--bye)
+    * [Saving the Data](#saving-the-data)
+* [FAQ](#faq)
+* [Troubleshooting Tips](#troubleshooting-tips)
+* [Command Summary](#command-summary)
 
-## Adding deadlines
+---
 
-// Describe the action and its outcome.
+## Quick Start
 
-// Give examples of usage
+1. Ensure you have **Java 17** installed on your terminal or computer.
+2. Download the latest `skywalker.jar` from the releases page.
+3. Move it to a folder of your choice; this will become Skywalker's home base.
+4. Open a terminal, navigate to that folder, and run: `java -jar skywalker.jar` to boot up the archives.
+5. Type any command in the command box and press Enter to execute it.
+   Some example commands you can try:
+    * `list` : Accesses the Jedi Holocron and lists all missions.
+    * `todo master the force` : Adds a new training task to the list.
+    * `delete 1` : Deletes the 1st mission in your current list.
+    * `bye` : Safely logs out of the system.
+6. Refer to the [Features](#features) below for the full command reference.
 
-Example: `keyword (optional arguments)`
+---
 
-// A description of the expected outcome goes here
+## Features
 
-```
-expected output
-```
+> **Notes about the command format:**
+> * Words in `UPPER_CASE` represent parameters you supply.
+    >   e.g. `todo DESCRIPTION` becomes `todo meditate`.
+> * Parameters must follow the order shown in each format.
+> * Commands that take no parameters (such as `list` and `bye`) must be entered on their own — adding extra input will cause a disturbance in the Force.
+    >   e.g. use `bye`, not `bye 123`.
+> * The Jedi Code is flexible: Commands are case-insensitive. e.g. `LIST`, `List`, and `list` all work the same way.
 
-## Feature ABC
+### Adding a Todo : `todo`
+Adds a standard training exercise or task without any date or time attached to it.
 
-// Feature details
+**Format:** `todo DESCRIPTION`
 
+**Example:**
+* `todo repair R2-D2`
 
-## Feature XYZ
+### Adding a Deadline : `deadline`
+Adds a mission that needs to be completed before a specific date or time.
 
-// Feature details
+**Format:** `deadline DESCRIPTION /by DATE_TIME`
+
+**Examples:**
+* `deadline submit recon report /by Friday`
+* `deadline defend Naboo /by 2026-03-28 23:59`
+
+### Adding an Event : `event`
+Adds a mission that starts at a specific time and ends at a specific time.
+
+**Format:** `event DESCRIPTION /from START_TIME /to END_TIME`
+
+**Example:**
+* `event Jedi Council Meeting /from 09:00 /to 11:30`
+
+### Listing all Tasks : `list`
+Shows a complete list of all missions currently in your Jedi Holocron.
+
+**Format:** `list`
+
+### Marking a Task : `mark`
+Marks the specified mission in the list as completed.
+
+**Format:** `mark INDEX`
+* Marks the task at the specified `INDEX`.
+* The index refers to the coordinate number shown in the displayed task list.
+* The index **must be a positive integer** (1, 2, 3, …)
+
+**Example:**
+* `list` followed by `mark 4` marks the 4th mission in the list as done.
+
+### Unmarking a Task : `unmark`
+Marks a previously completed mission as incomplete if it requires further attention.
+
+**Format:** `unmark INDEX`
+* The index **must be a positive integer** (1, 2, 3, …)
+
+**Example:**
+* `unmark 1` marks the 1st task in the list as not done yet.
+
+### Deleting a Task : `delete`
+Deletes the specified mission from the archives permanently.
+
+**Format:** `delete INDEX`
+* The index **must be a positive integer** (1, 2, 3, …)
+
+**Example:**
+* `delete 2` removes the 2nd task in the task list.
+
+### Locating Tasks by Name : `find`
+Searches the archives for all missions whose descriptions contain the specified keyword.
+
+**Format:** `find KEYWORD`
+* The search is case-insensitive. e.g. `sith` will match `Sith`.
+* Only the mission description is searched.
+
+**Example:**
+* `find report` returns tasks like `submit recon report` and `draft council report`.
+
+### Exiting the Program : `bye`
+Exits the system and ensures your missions are securely saved.
+
+**Format:** `bye`
+
+### Saving the Data
+Skywalker saves your mission list automatically after every change, so no manual saving is needed. Your data is stored locally in `./SkywalkerData.txt`, located in the same directory where you run the program.
+
+> ⚠️ **Note for Jedi Masters:** You may edit `SkywalkerData.txt` directly, but any formatting errors will corrupt the archives and cause Skywalker to start fresh on the next launch. Always keep a backup before manually altering the sacred texts.
+
+---
+
+## FAQ
+
+**Q**: How is my data saved?  
+**A**: Skywalker data is saved automatically after every command that alters the list. There is no need to save manually. It is located in `./SkywalkerData.txt` in the same directory as your `.jar` file.
+
+**Q**: How do I transfer my data to another terminal?  
+**A**: Set up Skywalker on the new machine, then simply replace its `SkywalkerData.txt` with your existing file.
+
+**Q**: What happens if I accidentally delete a task?  
+**A**: Deleted missions cannot be recovered from within the app using the Force. It is highly recommended to keep periodic backups of your `SkywalkerData.txt` file.
+
+---
+
+## Troubleshooting Tips
+
+1. **Invalid data file format** — If `SkywalkerData.txt` is edited incorrectly, Skywalker may fail to parse the archives and start with an empty list. Always back up the file before editing it by hand.
+2. **"A disturbance in the Force" errors** — Pay close attention to the error messages provided by the UI. Ensure you are using the correct delimiters (`/by`, `/from`, `/to`) for Deadlines and Events.
+
+---
+
+## Command Summary
+
+| Action | Format | Example |
+|--------|--------|---------|
+| **Todo** | `todo DESCRIPTION` | `todo clean lightsaber` |
+| **Deadline** | `deadline DESCRIPTION /by DATE_TIME` | `deadline secure blueprints /by tonight` |
+| **Event** | `event DESCRIPTION /from START_TIME /to END_TIME` | `event trench run /from 14:00 /to 15:00` |
+| **List** | `list` | `list` |
+| **Mark** | `mark INDEX` | `mark 4` |
+| **Unmark** | `unmark INDEX` | `unmark 3` |
+| **Delete** | `delete INDEX` | `delete 2` |
+| **Find** | `find KEYWORD` | `find blueprints` |
+| **Bye** | `bye` | `bye` |
+
+---
+*Developed by Aarav Baori for CS2113.*
