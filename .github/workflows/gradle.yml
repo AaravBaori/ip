@@ -30,4 +30,4 @@ jobs:
       shell: bash
       # We pipe "bye" into the JAR so it immediately exits successfully. 
       # If the Java version is wrong, it will crash before even reading the input.
-      run: echo "bye" | java -jar ip.jar
+      run: echo "bye" | java -jar ./out/artifacts/ip_jar/ip.jar
